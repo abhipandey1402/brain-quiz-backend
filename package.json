@@ -1,0 +1,24 @@
+{
+  "name": "brain_quiz_backend_api",
+  "version": "1.0.0",
+  "description": "a backend API for Brain-Quiz MCQ project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abhipandey1402/brain-quiz-backend.git"
+  },
+  "keywords": [
+    "brain-quiz",
+    "backend",
+    "mcq"
+  ],
+  "author": "Abhi Pandey",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/abhipandey1402/brain-quiz-backend/issues"
+  },
+  "homepage": "https://github.com/abhipandey1402/brain-quiz-backend#readme"
+}
