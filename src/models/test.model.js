@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 
 const testSchema = new Schema(
     {
-        userId: {
+        attemptedBy: {
             type: Schema.Types.ObjectId,
             ref: 'User'
         },
@@ -33,6 +33,10 @@ const testSchema = new Schema(
             required: true,
         },
         testSubmisionDuration: {
+            type: Number,
+            required: true,
+        },
+        score: {
             type: Number,
             required: true,
         },

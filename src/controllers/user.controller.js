@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { User } from '../models/user.model.js'
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose";
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -221,6 +222,61 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         ))
 })
 
+const getAtteptedTests = asyncHandler(async (req, res) => {
+
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: new mongoose.Types.ObjectId(req.user._id)
+            }
+        },
+        {
+            $lookup: {
+                from: "tests",
+                localField: "test",
+                foreignField: "_id",
+                as: "test",
+                pipeline: [
+                    {
+                        $lookup: {
+                            from: "users",
+                            localField: "attemptedBy",
+                            foreignField: "_id",
+                            as: "attemptedBy",
+                            pipeline: [
+                                {
+                                    $project: {
+                                        fullName: 1,
+                                        username: 1,
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        $addFields: {
+                            attemptedBy: {
+                                $first: "$attemptedBy"
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    ])
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user[0].test,
+                "Attempted Tests fetched successfully"
+            )
+        )
+
+})
+
 
 export {
     registerUser,
@@ -228,7 +284,8 @@ export {
     logoutUser,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentUser
+    getCurrentUser,
+    getAtteptedTests
 }
 
 
