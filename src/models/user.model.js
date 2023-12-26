@@ -37,7 +37,11 @@ const userSchema = new Schema(
                 type: Schema.Types.ObjectId,
                 ref: 'Test'
             }
-        ]
+        ],
+        totalScore: {
+            type: Number,
+            required: false,
+        }
     },
     {
         timestamps: true
@@ -69,6 +73,7 @@ userSchema.methods.generateAccessToken = function () {
         }
     )
 }
+
 userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(
         {

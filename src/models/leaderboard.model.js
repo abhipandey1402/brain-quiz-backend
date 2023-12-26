@@ -8,7 +8,7 @@ const leaderboardSchema = new Schema(
         },
         username: {
             type: String,
-            required: true,
+            required: false,
             trim: true,
         },
         score: {
@@ -17,11 +17,7 @@ const leaderboardSchema = new Schema(
         },
         rank: {
             type: Number,
-            required: true,
-        },
-        testId: {
-            type: Schema.Types.ObjectId,
-            ref: "Test",
+            required: false,
         },
     },
     {
