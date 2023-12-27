@@ -4,6 +4,7 @@ import { User } from '../models/user.model.js'
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
+import { Test } from "../models/test.model.js";
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
@@ -61,7 +62,9 @@ const registerUser = asyncHandler(async (req, res) => {
     }
 
     return res.status(201).json(
-        new ApiResponse(200, createdUser, "User registered Successfully")
+        new ApiResponse(200, {
+            user: createdUser
+        }, "User registered Successfully")
     )
 
 })
@@ -217,12 +220,17 @@ const getCurrentUser = asyncHandler(async (req, res) => {
         .status(200)
         .json(new ApiResponse(
             200,
-            req.user,
+            {
+                data: req.user
+            },
             "User fetched successfully"
         ))
 })
 
 const getAtteptedTests = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+    const skip = (page - 1) * size;
 
     const user = await User.aggregate([
         {
@@ -259,18 +267,36 @@ const getAtteptedTests = asyncHandler(async (req, res) => {
                                 $first: "$attemptedBy"
                             }
                         }
-                    }
+                    },
+                    {
+                        $skip: skip,
+                    },
+                    {
+                        $limit: size,
+                    },
                 ]
             }
         }
     ])
+
+    const totalCount = await Test.countDocuments({
+        attemptedBy: req.user._id,
+    });
+
+    const totalPages = Math.ceil(totalCount / size);
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                user[0].test,
+                {
+                    data: user[0].test,
+                    page,
+                    size,
+                    totalPages,
+                    totalCount,
+                },
                 "Attempted Tests fetched successfully"
             )
         )

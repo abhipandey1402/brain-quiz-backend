@@ -107,7 +107,7 @@
         }
       }
     },
-    "/api/v1/users/refresh-token": {
+    "/api/v1/users/refreshToken": {
       "post": {
         "description": "",
         "parameters": [
@@ -131,7 +131,7 @@
         }
       }
     },
-    "/api/v1/users/change-password": {
+    "/api/v1/users/changePassword": {
       "post": {
         "description": "",
         "parameters": [
@@ -163,7 +163,7 @@
         }
       }
     },
-    "/api/v1/users/current-user": {
+    "/api/v1/users/currentUser": {
       "get": {
         "description": "",
         "parameters": [
@@ -187,6 +187,16 @@
           {
             "name": "Authorization",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
             "type": "string"
           }
         ],
@@ -316,6 +326,16 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -427,6 +447,39 @@
             "name": "Authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v1/tests/getTestResultsById/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
@@ -443,6 +496,16 @@
           {
             "name": "Authorization",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "size",
+            "in": "query",
             "type": "string"
           }
         ],
