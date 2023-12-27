@@ -23,7 +23,9 @@ const addQuestion = asyncHandler(async (req, res) => {
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, savedQuestion, "Successfully added question"))
+        .json(new ApiResponse(200, {
+            data: savedQuestion
+        }, "Successfully added question"))
 })
 
 const updateQuestionById = asyncHandler(async (req, res) => {
@@ -45,7 +47,9 @@ const updateQuestionById = asyncHandler(async (req, res) => {
     const updatedQuestion = await existingQuestion.save();
 
     return res.status(200)
-        .json(new ApiResponse(200, updatedQuestion, "Question successfully updated"))
+        .json(new ApiResponse(200, {
+            data: updatedQuestion
+        }, "Question successfully updated"))
 })
 
 const deleteQuestionById = asyncHandler(async (req, res) => {
@@ -58,18 +62,35 @@ const deleteQuestionById = asyncHandler(async (req, res) => {
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, deletedQuestion, "Question successfully deleted"))
+        .json(new ApiResponse(200, {
+            data: deletedQuestion
+        }, "Question successfully deleted"))
 })
 
 const getAllQuestions = asyncHandler(async (req, res) => {
-    const allQuestions = await Question.find();
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+    const skip = (page - 1) * size;
+
+    const allQuestions = await Question.find()
+        .skip(skip)
+        .limit(size);
+
+    const totalCount = await Question.countDocuments();
+    const totalPages = Math.ceil(totalCount / size);
 
     if (!allQuestions) {
         throw new ApiError(404, "No Questions found")
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, allQuestions, "all Questions fetched Successfully"))
+        .json(new ApiResponse(200, {
+            data: allQuestions,
+            page,
+            pageSize: size,
+            totalPages,
+            totalCount,
+        }, "all Questions fetched Successfully"))
 })
 
 const getPracticeQuestions = asyncHandler(async (req, res) => {
@@ -85,9 +106,10 @@ const getPracticeQuestions = asyncHandler(async (req, res) => {
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, practiceQuestions, "Practice Questions fetched successfully"))
+        .json(new ApiResponse(200, {
+            data: practiceQuestions
+        }, "Practice Questions fetched successfully"))
 })
-
 
 
 export {

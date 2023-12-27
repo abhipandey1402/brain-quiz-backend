@@ -5,15 +5,27 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 
 const getLeaderboard = asyncHandler(async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const size = parseInt(req.query.size) || 10;
+    const skip = (page - 1) * size;
 
-    const leaderboard = await Leaderboard.find().sort({ score: -1 });
+    const leaderboard = await Leaderboard.find().sort({ score: -1 }).skip(skip).limit(size);
+
+    const totalCount = await Leaderboard.countDocuments();
+    const totalPages = Math.ceil(totalCount / size);
 
     if (!leaderboard) {
         throw new ApiError(404, "Leaderboard not found")
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, leaderboard, "Leaderboard fetched successfully"))
+        .json(new ApiResponse(200, {
+            data: leaderboard,
+            page,
+            size,
+            totalPages,
+            totalCount,
+        }, "Leaderboard fetched successfully"))
 })
 
 const refreshLeaderboard = asyncHandler(async (req, res) => {
@@ -36,7 +48,9 @@ const refreshLeaderboard = asyncHandler(async (req, res) => {
     }
 
     return res.status(200)
-        .json(new ApiResponse(200, result, "Leaderboard successfully refreshed"))
+        .json(new ApiResponse(200, {
+            data: result
+        }, "Leaderboard successfully refreshed"))
 })
 
 export { getLeaderboard, refreshLeaderboard }
