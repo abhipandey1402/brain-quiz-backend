@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "a backend API for Brain-Quiz MCQ project",
   "type": "module",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "start": "node index.js",
+    "dev": "nodemon -r dotenv/config --experimental-json-modules index.js",
     "swagger-autogen": "node ./docs/swagger.js"
   },
   "repository": {

@@ -3,7 +3,13 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
 import swagerDocument from './docs/swagger.json' assert { type: 'json' };
+import dotenv from "dotenv"
+import connectDB from "./db/index.js";
 
+
+dotenv.config({
+    path: './.env'
+})
 
 const app = express();
 
@@ -22,13 +28,25 @@ app.use(express.urlencoded({
 app.use(express.static("public"))
 app.use(cookieParser())
 
+
+connectDB()
+    .then(() => {
+        app.listen(process.env.PORT || 8000, () => {
+            console.log(`Server is running at port : ${process.env.PORT}`);
+        })
+    })
+    .catch((err) => {
+        console.log("MONGO DB connection Failed !!! ", err);
+    })
+
+
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagerDocument));
 
 // routes
-import userRouter from './src/routes/user.routes.js'
-import questionRouter from './src/routes/question.routes.js'
-import testRouter from './src/routes/test.routes.js'
-import leaderboardRouter from './src/routes/leaderboard.routes.js'
+import userRouter from './routes/user.routes.js'
+import questionRouter from './routes/question.routes.js'
+import testRouter from './routes/test.routes.js'
+import leaderboardRouter from './routes/leaderboard.routes.js'
 
 // routes declaration
 app.use("/api/v1/users", userRouter);
