@@ -1,10 +1,10 @@
 import { ApiError } from "../../utils/ApiError.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
-import { User } from '../src/models/user.model.js'
+import { User } from '../models/user.model.js'
 import { ApiResponse } from "../../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
-import { Test } from "../../models/test.model.jsl.js";
+import { Test } from "../models/test.model.js";
 
 
 const generateAccessAndRefreshTokens = async (userId) => {
