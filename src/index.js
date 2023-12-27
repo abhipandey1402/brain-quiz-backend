@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import swaggerUi from 'swagger-ui-express';
-import swagerDocument from './docs/swagger.json' assert { type: 'json' };
+import swagerDocument from '../docs/swagger.json' assert { type: 'json' };
 import dotenv from "dotenv"
 import connectDB from "./db/index.js";
 
@@ -43,10 +43,10 @@ connectDB()
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swagerDocument));
 
 // routes
-import userRouter from './src/routes/user.routes.js'
-import questionRouter from './src/routes/question.routes.js'
-import testRouter from './src/routes/test.routes.js'
-import leaderboardRouter from './src/routes/leaderboard.routes.js'
+import userRouter from './routes/user.routes.js'
+import questionRouter from './routes/question.routes.js'
+import testRouter from './routes/test.routes.js'
+import leaderboardRouter from './routes/leaderboard.routes.js'
 
 // routes declaration
 app.use("/api/v1/users", userRouter);
