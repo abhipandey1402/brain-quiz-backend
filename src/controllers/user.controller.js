@@ -7,6 +7,22 @@ import mongoose from "mongoose";
 import { Test } from "../models/test.model.js";
 
 
+const generateAccessAndRefreshTokens = async (userId) => {
+    try {
+        const user = await User.findById(userId)
+        const accessToken = await user.generateAccessToken()
+        const refreshToken = await user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
+
+        return { accessToken, refreshToken }
+
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating refresh and access token")
+    }
+}
+
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
     // validation - not empty
@@ -81,11 +97,9 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid user credentials")
     }
 
-    const accessToken = await user.generateAccessToken()
-    const refreshToken = await user.generateRefreshToken()
+    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
 
-    user.refreshToken = refreshToken
-    await user.save({ validateBeforeSave: false })
+
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -136,7 +150,6 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
-
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
@@ -166,11 +179,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
 
-        const accessToken = await user.generateAccessToken()
-        const refreshToken = await user.generateRefreshToken()
-
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
 
         return res
             .status(200)
