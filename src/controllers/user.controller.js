@@ -6,22 +6,40 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import { Test } from "../models/test.model.js";
 
-
 const generateAccessAndRefreshTokens = async (userId) => {
     try {
-        const user = await User.findById(userId)
-        const accessToken = await user.generateAccessToken()
-        const refreshToken = await user.generateRefreshToken()
+        // Ensure that the user exists
+        const user = await User.findById(userId);
+        if (!user) {
+            throw new ApiError(404, "User not found");
+        }
 
-        user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false })
+        // Generate access token
+        const accessToken = await user.generateAccessToken();
 
-        return { accessToken, refreshToken }
+        // Generate refresh token
+        const refreshToken = await user.generateRefreshToken();
 
+        // Update user's refreshToken field and save
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false });
+
+        // Return the tokens
+        return { accessToken, refreshToken };
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating refresh and access token")
+        // Log the specific error for debugging purposes
+        console.error("Error in generateAccessAndRefreshTokens:", error);
+
+        // Throw a more specific error if available
+        if (error instanceof ApiError) {
+            throw error;
+        }
+
+        // Throw a generic error if the issue is not specific
+        throw new ApiError(500, "Something went wrong while generating refresh and access tokens");
     }
-}
+};
+
 
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
