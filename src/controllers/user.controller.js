@@ -6,40 +6,6 @@ import jwt from "jsonwebtoken"
 import mongoose from "mongoose";
 import { Test } from "../models/test.model.js";
 
-const generateAccessAndRefreshTokens = async (userId) => {
-    try {
-        // Ensure that the user exists
-        const user = await User.findById(userId);
-        if (!user) {
-            throw new ApiError(404, "User not found");
-        }
-
-        // Generate access token
-        const accessToken = await user.generateAccessToken();
-
-        // Generate refresh token
-        const refreshToken = await user.generateRefreshToken();
-
-        // Update user's refreshToken field and save
-        user.refreshToken = refreshToken;
-        await user.save({ validateBeforeSave: false });
-
-        // Return the tokens
-        return { accessToken, refreshToken };
-    } catch (error) {
-        // Log the specific error for debugging purposes
-        console.error("Error in generateAccessAndRefreshTokens:", error);
-
-        // Throw a more specific error if available
-        if (error instanceof ApiError) {
-            throw error;
-        }
-
-        // Throw a generic error if the issue is not specific
-        throw new ApiError(500, "Something went wrong while generating refresh and access tokens");
-    }
-};
-
 
 const registerUser = asyncHandler(async (req, res) => {
     // get user details from frontend
@@ -115,7 +81,11 @@ const loginUser = asyncHandler(async (req, res) => {
         throw new ApiError(401, "Invalid user credentials")
     }
 
-    const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(user._id);
+    const accessToken = await user.generateAccessToken()
+    const refreshToken = await user.generateRefreshToken()
+
+    user.refreshToken = refreshToken
+    await user.save({ validateBeforeSave: false })
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
@@ -166,6 +136,7 @@ const logoutUser = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
+
 const refreshAccessToken = asyncHandler(async (req, res) => {
     const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
 
@@ -195,7 +166,11 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             secure: true
         }
 
-        const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id)
+        const accessToken = await user.generateAccessToken()
+        const refreshToken = await user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({ validateBeforeSave: false })
 
         return res
             .status(200)
