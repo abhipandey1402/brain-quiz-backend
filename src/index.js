@@ -14,7 +14,11 @@ dotenv.config({
 const app = express();
 
 app.use(cors({
-    origin: '*',
+    origin: [
+        "https://brainquizmcq.netlify.app",
+        "http://localhost:3000", // Allow access from localhost
+        "http://localhost:3001", // Allow access from localhost
+    ],
     methods: ["POST", "GET", "PUT", "PATCH", "DELETE"],
     credentials: true,
 }))
