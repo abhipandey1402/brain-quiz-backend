@@ -3,9 +3,11 @@ import { Test } from '../models/test.model.js'
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { Question } from "../models/question.model.js";
 
 const saveTestResult = asyncHandler(async (req, res) => {
     const {
+        answers,
         topic,
         difficulty,
         numberOfQue,
@@ -13,9 +15,47 @@ const saveTestResult = asyncHandler(async (req, res) => {
         inCorrectAns,
         testTotalDuration,
         testSubmisionDuration,
-        score,
         status,
     } = req.body;
+
+    const allQuestions = await Question.find();
+
+    let score = 0;
+    const attemptedQuestions = [];
+
+    answers.forEach((answer) => {
+        const question = allQuestions.find((q) => q._id.equals(answer.questionId));
+
+        if (question) {
+            const isCorrect = question.answer === answer.selectedOption;
+
+            attemptedQuestions.push({
+                questionId: question._id,
+                question: question.question,
+                options: question.options,
+                correctAnswer: question.answer,
+                selectedOption: answer.selectedOption,
+                isCorrect,
+            });
+
+            if (isCorrect) {
+                switch (question.difficulty.toLowerCase()) {
+                    case 'easy':
+                        score += 5;
+                        break;
+                    case 'medium':
+                        score += 7;
+                        break;
+                    case 'hard':
+                        score += 10;
+                        break;
+                    default:
+                        score += 5;
+                        break;
+                }
+            }
+        }
+    });
 
     // Create a new test instance
     const test = new Test({
@@ -29,6 +69,7 @@ const saveTestResult = asyncHandler(async (req, res) => {
         testSubmisionDuration,
         score,
         status,
+        attemptedQuestions,
     });
 
     const savedTest = await test.save();

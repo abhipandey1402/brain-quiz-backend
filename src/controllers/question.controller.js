@@ -97,9 +97,9 @@ const getPracticeQuestions = asyncHandler(async (req, res) => {
     const { topic, difficulty, noOfQuestions } = req.params
 
     const practiceQuestions = await Question.find({
-        topic: topic,
-        difficulty: difficulty,
-    }).limit(noOfQuestions);
+        topic: topic.toLowerCase(),
+        difficulty: difficulty.toLowerCase(),
+    }).limit(noOfQuestions).select('-answer, -attemptedBy');
 
     if (!practiceQuestions) {
         throw new ApiError(404, "No Question found with given query data")
