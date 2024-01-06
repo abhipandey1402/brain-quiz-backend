@@ -23,7 +23,8 @@ const saveTestResult = asyncHandler(async (req, res) => {
     let score = 0;
     const attemptedQuestions = [];
 
-    answers.forEach((answer) => {
+
+    const updatePromises = await Promise.all(answers.map(async (answer) => {
         const question = allQuestions.find((q) => q._id.equals(answer.questionId));
 
         if (question) {
@@ -53,9 +54,21 @@ const saveTestResult = asyncHandler(async (req, res) => {
                         score += 5;
                         break;
                 }
+
+                // Check if the user ID is not already in the attemptedBy array
+                const userAlreadyAttempted = question.attemptedBy.includes(req.user._id);
+
+                if (!userAlreadyAttempted) {
+                    // Push the user ID to the attemptedBy array only when the answer is correct and the user ID is not already present
+                    await Question.updateOne(
+                        { _id: question._id },
+                        { $push: { attemptedBy: req.user._id } }
+                    );
+                }
             }
         }
-    });
+    }));
+
 
     // Create a new test instance
     const test = new Test({

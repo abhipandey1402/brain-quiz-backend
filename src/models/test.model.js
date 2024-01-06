@@ -44,7 +44,38 @@ const testSchema = new Schema(
             type: String,
             enum: ["NOT_STARTED", "STARTED", "COMPLETED"],
             required: true,
-        }
+        },
+        attemptedQuestions: [
+            {
+                questionId: {
+                    type: Schema.Types.ObjectId,
+                    ref: 'Question',
+                    required: true
+                },
+                question: {
+                    type: String,
+                    required: true
+                },
+                options: [
+                    {
+                        type: String,
+                        required: true
+                    }
+                ],
+                correctAnswer: {
+                    type: String,
+                    required: true
+                },
+                selectedOption: {
+                    type: String,
+                    required: true
+                },
+                isCorrect: {
+                    type: Boolean,
+                    required: true
+                },
+            }
+        ]
     },
     {
         timestamps: true
