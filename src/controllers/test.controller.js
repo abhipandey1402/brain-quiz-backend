@@ -5,14 +5,13 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Question } from "../models/question.model.js";
 
+
 const saveTestResult = asyncHandler(async (req, res) => {
     const {
         answers,
         topic,
         difficulty,
         numberOfQue,
-        correctAns,
-        inCorrectAns,
         testTotalDuration,
         testSubmisionDuration,
         status,
@@ -21,6 +20,8 @@ const saveTestResult = asyncHandler(async (req, res) => {
     const allQuestions = await Question.find();
 
     let score = 0;
+    let correctAns = 0;
+    let inCorrectAns = 0;
     const attemptedQuestions = [];
 
 
@@ -55,6 +56,8 @@ const saveTestResult = asyncHandler(async (req, res) => {
                         break;
                 }
 
+                correctAns++;
+
                 // Check if the user ID is not already in the attemptedBy array
                 const userAlreadyAttempted = question.attemptedBy.includes(req.user._id);
 
@@ -65,6 +68,8 @@ const saveTestResult = asyncHandler(async (req, res) => {
                         { $push: { attemptedBy: req.user._id } }
                     );
                 }
+            } else {
+                inCorrectAns++;
             }
         }
     }));
