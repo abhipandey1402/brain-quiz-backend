@@ -28,6 +28,10 @@ const testSchema = new Schema(
             type: Number,
             required: true,
         },
+        unAttempted: {
+            type: Number,
+            required: true,
+        },
         testTotalDuration: {
             type: Number,
             required: true,
@@ -37,6 +41,10 @@ const testSchema = new Schema(
             required: true,
         },
         score: {
+            type: Number,
+            required: true,
+        },
+        totalScore: {
             type: Number,
             required: true,
         },

@@ -271,6 +271,9 @@ const getAtteptedTests = asyncHandler(async (req, res) => {
                         }
                     },
                     {
+                        $sort: { createdAt: -1 } // Sort by createdAt in descending order (recent first)
+                    },
+                    {
                         $skip: skip,
                     },
                     {

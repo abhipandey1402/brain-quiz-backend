@@ -5,6 +5,28 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Question } from "../models/question.model.js";
 
+// Function to calculate totalScore based on difficulty and numberOfQue
+const calculateTotalScore = (difficulty, numberOfQue) => {
+    let totalScore = 0;
+
+    switch (difficulty.toLowerCase()) {
+        case 'easy':
+            totalScore += 5 * numberOfQue;
+            break;
+        case 'medium':
+            totalScore += 7 * numberOfQue;
+            break;
+        case 'hard':
+            totalScore += 10 * numberOfQue;
+            break;
+        default:
+            totalScore += 5 * numberOfQue;
+            break;
+    }
+
+    return totalScore;
+};
+
 
 const saveTestResult = asyncHandler(async (req, res) => {
     const {
@@ -74,6 +96,8 @@ const saveTestResult = asyncHandler(async (req, res) => {
         }
     }));
 
+    const totalScore = calculateTotalScore(difficulty, numberOfQue);
+    const unAttempted = numberOfQue - (correctAns + inCorrectAns);
 
     // Create a new test instance
     const test = new Test({
@@ -83,9 +107,11 @@ const saveTestResult = asyncHandler(async (req, res) => {
         numberOfQue,
         correctAns,
         inCorrectAns,
+        unAttempted,
         testTotalDuration,
         testSubmisionDuration,
         score,
+        totalScore,
         status,
         attemptedQuestions,
     });
