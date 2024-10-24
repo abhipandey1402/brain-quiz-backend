@@ -395,6 +395,9 @@
             "schema": {
               "type": "object",
               "properties": {
+                "answers": {
+                  "example": "any"
+                },
                 "topic": {
                   "example": "any"
                 },
@@ -404,19 +407,10 @@
                 "numberOfQue": {
                   "example": "any"
                 },
-                "correctAns": {
-                  "example": "any"
-                },
-                "inCorrectAns": {
-                  "example": "any"
-                },
                 "testTotalDuration": {
                   "example": "any"
                 },
                 "testSubmisionDuration": {
-                  "example": "any"
-                },
-                "score": {
                   "example": "any"
                 },
                 "status": {
